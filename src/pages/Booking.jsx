@@ -316,7 +316,7 @@ function DateTimeStep({ days, slots, busyRanges, loadingBusy, selectedDay, selec
 
 function ClientInfoStep({ therapist, service, tarifType, format, selectedDay, selectedSlot, price, onBack, onSuccess }) {
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '' })
-  const [paymentMethod, setPaymentMethod] = useState(format === 'visio' ? 'online' : 'cabinet')
+  const [paymentMethod, setPaymentMethod] = useState(format === 'visio' ? 'online' : 'especes')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
@@ -408,7 +408,7 @@ function ClientInfoStep({ therapist, service, tarifType, format, selectedDay, se
           </div>
         ) : (
           <div className="toggle-group" style={{ flexDirection: 'column' }}>
-            <button className={`toggle-btn ${paymentMethod === 'cabinet' ? 'selected' : ''}`} onClick={() => setPaymentMethod('cabinet')}>
+            <button className={`toggle-btn ${paymentMethod === 'especes' ? 'selected' : ''}`} onClick={() => setPaymentMethod('especes')}>
               💵 Espèces ou carte le jour de la séance
             </button>
             <button className={`toggle-btn ${paymentMethod === 'online' ? 'selected' : ''}`} onClick={() => setPaymentMethod('online')}>
