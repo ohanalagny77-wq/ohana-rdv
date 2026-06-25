@@ -1,9 +1,0 @@
-.admin-therapist-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  border: 0.5px solid var(--ohana-gold-border);
-  border-radius: 8px;
-  margin-bottom: 8px;
-}
