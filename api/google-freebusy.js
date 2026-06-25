@@ -1,11 +1,8 @@
-// Fonction serverless Vercel : récupère les créneaux occupés du Google Agenda d'une thérapeute
-// pour une période donnée, en utilisant l'API "freebusy" de Google Calendar.
-
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // clé service_role, utilisée uniquement côté serveur
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
 async function refreshAccessToken(refreshToken) {
@@ -26,7 +23,7 @@ export default async function handler(req, res) {
   const { therapistId, timeMin, timeMax } = req.query
 
   if (!therapistId || !timeMin || !timeMax) {
-    return res.status(400).json({ error: 'Paramètres manquants (therapistId, timeMin, timeMax)' })
+    return res.status(400).json({ error: 'Paramètres manquants' })
   }
 
   try {
@@ -37,18 +34,16 @@ export default async function handler(req, res) {
       .single()
 
     if (error || !therapist || !therapist.google_calendar_connected) {
-      // Pas d'agenda connecté : on renvoie une liste vide (aucun créneau bloqué côté Google)
-      return res.status(200).json({ busy: [] })
+      return res.status(200).json({ busy: [], debug: 'agenda non connecté ou thérapeute introuvable' })
     }
 
     let accessToken = therapist.google_access_token
     const expiry = new Date(therapist.google_token_expiry)
 
-    // Rafraîchir le jeton s'il est expiré (avec une marge de 2 minutes)
     if (expiry.getTime() < Date.now() + 2 * 60 * 1000) {
       const refreshed = await refreshAccessToken(therapist.google_refresh_token)
       if (refreshed.error) {
-        return res.status(200).json({ busy: [], warning: 'Jeton Google expiré, reconnexion nécessaire' })
+        return res.status(200).json({ busy: [], warning: 'Jeton Google expiré' })
       }
       accessToken = refreshed.access_token
       const newExpiry = new Date(Date.now() + refreshed.expires_in * 1000).toISOString()
